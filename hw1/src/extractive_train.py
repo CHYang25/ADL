@@ -418,7 +418,7 @@ def main():
         if args.test_file is not None:
             data_files["test"] = args.test_file
         extension = args.train_file.split(".")[-1]
-        raw_datasets = load_dataset(extension, data_files=data_files, field="data")
+        raw_datasets = load_dataset(extension, data_files=data_files)
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.html.
 
@@ -428,20 +428,20 @@ def main():
     # download model & vocab.
 
     if args.config_name:
-        config = AutoConfig.from_pretrained(args.config_name, trust_remote_code=args.trust_remote_code)
+        config = AutoConfig.from_pretrained(args.config_name, trust_remote_code=args.trust_remote_code, cache_dir=args.output_dir)
     elif args.model_name_or_path:
-        config = AutoConfig.from_pretrained(args.model_name_or_path, trust_remote_code=args.trust_remote_code)
+        config = AutoConfig.from_pretrained(args.model_name_or_path, trust_remote_code=args.trust_remote_code, cache_dir=args.output_dir)
     else:
         config = CONFIG_MAPPING[args.model_type]()
         logger.warning("You are instantiating a new config instance from scratch.")
 
     if args.tokenizer_name:
         tokenizer = AutoTokenizer.from_pretrained(
-            args.tokenizer_name, use_fast=True, trust_remote_code=args.trust_remote_code
+            args.tokenizer_name, use_fast=True, trust_remote_code=args.trust_remote_code, cache_dir=args.output_dir
         )
     elif args.model_name_or_path:
         tokenizer = AutoTokenizer.from_pretrained(
-            args.model_name_or_path, use_fast=True, trust_remote_code=args.trust_remote_code
+            args.model_name_or_path, use_fast=True, trust_remote_code=args.trust_remote_code, cache_dir=args.output_dir
         )
     else:
         raise ValueError(
@@ -455,6 +455,7 @@ def main():
             from_tf=bool(".ckpt" in args.model_name_or_path),
             config=config,
             trust_remote_code=args.trust_remote_code,
+            cache_dir=args.output_dir,
         )
     else:
         logger.info("Training new model from scratch")
@@ -462,13 +463,6 @@ def main():
 
     # Preprocessing the datasets.
     # Preprocessing is slighlty different for training and evaluation.
-
-    column_names = raw_datasets["train"].column_names
-
-    question_column_name = "question" if "question" in column_names else column_names[0]
-    context_column_name = "context" if "context" in column_names else column_names[1]
-    answer_column_name = "answers" if "answers" in column_names else column_names[2]
-
     # Padding side determines if we do (question|context) or (context|question).
     pad_on_right = tokenizer.padding_side == "right"
 
@@ -480,6 +474,13 @@ def main():
 
     max_seq_length = min(args.max_seq_length, tokenizer.model_max_length)
 
+    column_names = raw_datasets["train"].column_names
+    question_column_name = "question"
+    context_column_name = "relevant"
+    with open(args.context_file, "r") as f:
+        context = json.loads(f.read())
+    answer_column_name = "answer"
+
     # Training preprocessing
     def prepare_train_features(examples):
         # Some of the questions have lots of whitespace on the left, which is not useful and will make the
@@ -490,10 +491,20 @@ def main():
         # Tokenize our examples with truncation and maybe padding, but keep the overflows using a stride. This results
         # in one example possible giving several features when a context is long, each of those features having a
         # context that overlaps a bit the context of the previous feature.
+        
         tokenized_examples = tokenizer(
-            examples[question_column_name if pad_on_right else context_column_name],
-            examples[context_column_name if pad_on_right else question_column_name],
-            truncation="only_second" if pad_on_right else "only_first",
+            examples[question_column_name],
+            [context[i] for i in examples[context_column_name]],
+            truncation="only_second",
+            max_length=max_seq_length,
+            stride=args.doc_stride,
+            return_overflowing_tokens=True,
+            return_offsets_mapping=True,
+            padding="max_length" if args.pad_to_max_length else False,
+        ) if pad_on_right else tokenizer(
+            [context[i] for i in examples[context_column_name]],
+            examples[question_column_name],
+            truncation="only_first",
             max_length=max_seq_length,
             stride=args.doc_stride,
             return_overflowing_tokens=True,
@@ -524,13 +535,13 @@ def main():
             sample_index = sample_mapping[i]
             answers = examples[answer_column_name][sample_index]
             # If no answers are given, set the cls_index as answer.
-            if len(answers["answer_start"]) == 0:
+            if len(answers["text"]) == 0:
                 tokenized_examples["start_positions"].append(cls_index)
                 tokenized_examples["end_positions"].append(cls_index)
             else:
                 # Start/end character index of the answer in the text.
-                start_char = answers["answer_start"][0]
-                end_char = start_char + len(answers["text"][0])
+                start_char = answers["start"]
+                end_char = start_char + len(answers["text"])
 
                 # Start token index of the current span in the text.
                 token_start_index = 0
@@ -590,9 +601,18 @@ def main():
         # in one example possible giving several features when a context is long, each of those features having a
         # context that overlaps a bit the context of the previous feature.
         tokenized_examples = tokenizer(
-            examples[question_column_name if pad_on_right else context_column_name],
-            examples[context_column_name if pad_on_right else question_column_name],
-            truncation="only_second" if pad_on_right else "only_first",
+            examples[question_column_name],
+            [context[i] for i in examples[context_column_name]],
+            truncation="only_second",
+            max_length=max_seq_length,
+            stride=args.doc_stride,
+            return_overflowing_tokens=True,
+            return_offsets_mapping=True,
+            padding="max_length" if args.pad_to_max_length else False,
+        ) if pad_on_right else tokenizer(
+            [context[i] for i in examples[context_column_name]],
+            examples[question_column_name],
+            truncation="only_first",
             max_length=max_seq_length,
             stride=args.doc_stride,
             return_overflowing_tokens=True,
