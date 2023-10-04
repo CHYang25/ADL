@@ -723,6 +723,7 @@ def main():
         # Post-processing: we match the start logits and end logits to answers in the original context.
         predictions = postprocess_qa_predictions(
             examples=examples,
+            context_file=context, # the context.json is converted into a list here, called context. In utils_qa.py, it's called context_file
             features=features,
             predictions=predictions,
             version_2_with_negative=args.version_2_with_negative,
@@ -739,8 +740,10 @@ def main():
             ]
         else:
             formatted_predictions = [{"id": k, "prediction_text": v} for k, v in predictions.items()]
-
-        references = [{"id": ex["id"], "answers": ex[answer_column_name]} for ex in examples]
+        
+        # >>> predictions = [{'prediction_text': '1976', 'id': '56e10a3be3433e1400422b22'}]
+        # >>> references = [{'answers': {'answer_start': [97], 'text': ['1976']}, 'id': '56e10a3be3433e1400422b22'}]
+        references = [{"id": ex["id"], "answers": {"text": [ex[answer_column_name]["text"]], "answer_start": [ex[answer_column_name]["start"]]}} for ex in examples]
         return EvalPrediction(predictions=formatted_predictions, label_ids=references)
 
     metric = evaluate.load("squad_v2" if args.version_2_with_negative else "squad")
@@ -792,6 +795,10 @@ def main():
         },
     ]
     optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=args.learning_rate)
+
+    device = accelerator.device
+    print("The device is using: ", device)
+    model.to(device)
 
     # Scheduler and math around the number of training steps.
     overrode_max_train_steps = False

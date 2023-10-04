@@ -5,15 +5,15 @@ export PYTHONPATH
 
 case ${1} in
     "multiple_choice")
-        CUDA_VISIBLE_DEVICES=0 python ./src/multiple_choice_train.py \
+        CUDA_VISIBLE_DEVICES=1 python ./src/multiple_choice_train.py \
         --train_file /tmp2/b10902069/adl_hw1/train.json \
         --validation_file /tmp2/b10902069/adl_hw1/valid.json \
         --context_file /tmp2/b10902069/adl_hw1/context.json \
-        --max_seq_length 1024 \
+        --max_seq_length 128 \
         --model_name_or_path bert-base-chinese \
         --learning_rate 5e-5 \
         --num_train_epochs 1 \
-        --output_dir /tmp2/b10902069/adl_hw1 \
+        --output_dir /tmp2/b10902069/adl_hw1/multiple_choice_dir/ \
         --per_device_eval_batch_size=16 \
         --per_device_train_batch_size=16 \
         --seed 4125252 \
@@ -38,7 +38,7 @@ case ${1} in
         # --resume_from_checkpoint
         ;;
     "extractive")
-        CUDA_VISIBLE_DEVICES=0 python ./src/extractive_train.py \
+        CUDA_VISIBLE_DEVICES=1 python ./src/extractive_train.py \
         --train_file /tmp2/b10902069/adl_hw1/train.json \
         --validation_file /tmp2/b10902069/adl_hw1/valid.json \
         --context_file /tmp2/b10902069/adl_hw1/context.json \
@@ -46,7 +46,7 @@ case ${1} in
         --model_name_or_path bert-base-chinese \
         --learning_rate 5e-5 \
         --num_train_epochs 1 \
-        --output_dir /tmp2/b10902069/adl_hw1 \
+        --output_dir /tmp2/b10902069/adl_hw1/extractive_dir/ \
         --per_device_eval_batch_size=16 \
         --per_device_train_batch_size=16 \
         --seed 4125252 \
