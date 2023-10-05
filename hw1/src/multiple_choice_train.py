@@ -52,11 +52,10 @@ from transformers import (
     default_data_collator,
     get_scheduler,
 )
-from transformers.utils import PaddingStrategy, check_min_version, send_example_telemetry
+from transformers.utils import PaddingStrategy, send_example_telemetry
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-# check_min_version("4.34.0.dev0")
 
 logger = get_logger(__name__)
 # You should update this to your particular problem to have better documentation of `model_type`
@@ -501,7 +500,7 @@ def main():
 
     # Use the device given by the `accelerator` object.
     device = accelerator.device
-    print("The device is using: ", device)
+    logger.info(f"The device is using: {device}")
     model.to(device)
 
     # Scheduler and math around the number of training steps.

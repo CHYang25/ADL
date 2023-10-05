@@ -52,12 +52,11 @@ from transformers import (
     default_data_collator,
     get_scheduler,
 )
-from transformers.utils import check_min_version, send_example_telemetry
+from transformers.utils import send_example_telemetry
 from transformers.utils.versions import require_version
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-# check_min_version("4.34.0.dev0")
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/question-answering/requirements.txt")
 
@@ -473,7 +472,7 @@ def main():
         )
 
     max_seq_length = min(args.max_seq_length, tokenizer.model_max_length)
-
+    
     column_names = raw_datasets["train"].column_names
     question_column_name = "question"
     context_column_name = "relevant"
@@ -797,7 +796,7 @@ def main():
     optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=args.learning_rate)
 
     device = accelerator.device
-    print("The device is using: ", device)
+    logger.info(f"The device is using: {device}")
     model.to(device)
 
     # Scheduler and math around the number of training steps.
