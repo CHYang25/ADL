@@ -320,14 +320,18 @@ def main():
     model_m.eval()
 
     # multiple_choice model output
+    logger.info("***** Running Multiple Choice Model *****")
+    logger.info(f"  Num examples = {len(test_dataset)}")
     first_model_output = []
 
+    progress_bar = tqdm(range(len(test_dataset)), disable=not accelerator.is_local_main_process)
     paragraph_list = [[i.as_py() for i in segment] for segment in raw_datasets.data["test"]["paragraphs"]]
     for step, batch in enumerate(test_dataloader):
         with torch.no_grad():
             outputs = model_m(**batch)
         predictions = outputs.logits.argmax(dim=-1)
         first_model_output.append(paragraph_list[step][predictions.item()])
+        progress_bar.update(1)
         
     # Second Model -- Extractive
     # Preprocessing the datasets.
@@ -482,6 +486,11 @@ def main():
     model_e, eval_dataloader = accelerator.prepare(model_e, eval_dataloader)
     model_e.eval()
 
+    logger.info("***** Running Extractive Model *****")
+    logger.info(f"  Num examples = {len(test_dataset)}")
+
+    progress_bar_2 = tqdm(range(len(test_dataset)), disable=not accelerator.is_local_main_process)
+
     all_start_logits = []
     all_end_logits = []
     for step, batch in enumerate(eval_dataloader):
@@ -496,6 +505,7 @@ def main():
 
             all_start_logits.append(accelerator.gather_for_metrics(start_logits).cpu().numpy())
             all_end_logits.append(accelerator.gather_for_metrics(end_logits).cpu().numpy())
+            progress_bar_2.update(1)
 
     max_len = max([x.shape[1] for x in all_start_logits])  # Get the max_length of the tensor
 
@@ -510,11 +520,14 @@ def main():
     outputs_numpy = (start_logits_concat, end_logits_concat)
     prediction = post_processing_function_e(eval_examples, eval_dataset, outputs_numpy)
 
+    logger.info("***** Saving the result *****")
+    progress_bar_3 = tqdm(range(len(test_dataset)), disable=not accelerator.is_local_main_process)  
     with open("result.csv", "w") as f:
         f.write("id,answer\n")
         for pair in prediction:
             id_, text_ = pair["id"], pair["prediction_text"]
             f.write(f"{id_},{text_}\n")
+            progress_bar_3.update(1)
 
 if __name__ == "__main__":
     main()
