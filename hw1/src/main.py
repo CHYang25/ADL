@@ -57,6 +57,9 @@ def parse_args():
         "--context_file", type=str, default=None, help="A json file containing the context of data."
     )
     parser.add_argument(
+        "--result_file", type=str, default=None, help="A csv file that stores the result."
+    )
+    parser.add_argument(
         "--model_name_or_path_multiple_choice",
         type=str,
         help="Path to pretrained model or model identifier from huggingface.co/models.",
@@ -522,7 +525,7 @@ def main():
 
     logger.info("***** Saving the result *****")
     progress_bar_3 = tqdm(range(len(test_dataset)), disable=not accelerator.is_local_main_process)  
-    with open("result.csv", "w") as f:
+    with open(args.result_file, "w") as f:
         f.write("id,answer\n")
         for pair in prediction:
             id_, text_ = pair["id"], pair["prediction_text"]

@@ -6,14 +6,14 @@ export PYTHONPATH
 case ${1} in
     "multiple_choice")
         CUDA_VISIBLE_DEVICES=0 python3 ./src/multiple_choice_train.py \
-        --train_file /tmp2/b10902069/adl_hw1/train.json \
-        --validation_file /tmp2/b10902069/adl_hw1/valid.json \
-        --context_file /tmp2/b10902069/adl_hw1/context.json \
+        --train_file ${2} \
+        --validation_file ${3} \
+        --context_file ${4} \
         --max_seq_length 512 \
         --model_name_or_path bert-base-chinese \
         --learning_rate 3e-5 \
         --num_train_epochs 8 \
-        --output_dir /tmp2/b10902069/adl_hw1/multiple_choice_dir/ \
+        --output_dir ./model/multiple_choice_dir/ \
         --per_device_eval_batch_size=4 \
         --per_device_train_batch_size=4 \
         --gradient_accumulation_steps=2 \
@@ -39,18 +39,19 @@ case ${1} in
         ;;
     "extractive")
         CUDA_VISIBLE_DEVICES=0 python3 ./src/extractive_train.py \
-        --train_file /tmp2/b10902069/adl_hw1/train.json \
-        --validation_file /tmp2/b10902069/adl_hw1/valid.json \
-        --context_file /tmp2/b10902069/adl_hw1/context.json \
+        --train_file ${2} \
+        --validation_file ${3} \
+        --context_file ${4} \
         --max_seq_length 512 \
         --model_name_or_path hfl/chinese-roberta-wwm-ext-large \
         --learning_rate 3e-5 \
         --num_train_epochs 3 \
-        --output_dir /tmp2/b10902069/adl_hw1/extractive_dir/ \
+        --output_dir ./model/extractive_dir/ \
         --per_device_eval_batch_size=2 \
         --per_device_train_batch_size=2 \
         --gradient_accumulation_steps=1 \
         --seed 4125252 \
+        
         # Other unsused options:
         # --dataset_name
         # --dataset_config_name
