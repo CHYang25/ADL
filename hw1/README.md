@@ -27,9 +27,9 @@ hw1
 4. ```report.pdf```: The report for hw1.
 5. ```run.sh```: Run the ```src/main.py``` script with options set and generate the result.
 6. ```src```: The directory contains the source python scripts.
-  - ```extractive_train.py```: The python script that train the second model for extracting the precise segment from the chosen paragraph.
-  - ```main.py```: The python script that import the two fine-tuned model and generate the result.
-  - ```multiple_choice_train.py```: The python script that train the first model identifying the relevant paragraph based on the question.
+    - ```extractive_train.py```: The python script that train the second model for extracting the precise segment from the chosen paragraph.
+    - ```main.py```: The python script that import the two fine-tuned model and generate the result.
+    - ```multiple_choice_train.py```: The python script that train the first model identifying the relevant paragraph based on the question.
 7. ```train.sh```: Fine-tune the two models from two different pretrained models.
 
 ## Execution
