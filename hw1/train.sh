@@ -5,17 +5,18 @@ export PYTHONPATH
 
 case ${1} in
     "multiple_choice")
-        CUDA_VISIBLE_DEVICES=1 python3 ./src/multiple_choice_train.py \
+        CUDA_VISIBLE_DEVICES=0 python3 ./src/multiple_choice_train.py \
         --train_file /tmp2/b10902069/adl_hw1/train.json \
         --validation_file /tmp2/b10902069/adl_hw1/valid.json \
         --context_file /tmp2/b10902069/adl_hw1/context.json \
-        --max_seq_length 128 \
+        --max_seq_length 512 \
         --model_name_or_path bert-base-chinese \
-        --learning_rate 5e-5 \
-        --num_train_epochs 1 \
+        --learning_rate 3e-5 \
+        --num_train_epochs 8 \
         --output_dir /tmp2/b10902069/adl_hw1/multiple_choice_dir/ \
-        --per_device_eval_batch_size=16 \
-        --per_device_train_batch_size=16 \
+        --per_device_eval_batch_size=4 \
+        --per_device_train_batch_size=4 \
+        --gradient_accumulation_steps=2 \
         --seed 4125252 \
 
         # Other unsused options:
@@ -27,7 +28,6 @@ case ${1} in
         # --use_slow_tokenizer
         # --weight_decay
         # --max_train_steps
-        # --gradient_accumulation_steps
         # --lr_scheduler_type
         # --num_warmup_steps
         # --debug
@@ -38,19 +38,19 @@ case ${1} in
         # --resume_from_checkpoint
         ;;
     "extractive")
-        CUDA_VISIBLE_DEVICES=1 python3 ./src/extractive_train.py \
+        CUDA_VISIBLE_DEVICES=0 python3 ./src/extractive_train.py \
         --train_file /tmp2/b10902069/adl_hw1/train.json \
         --validation_file /tmp2/b10902069/adl_hw1/valid.json \
         --context_file /tmp2/b10902069/adl_hw1/context.json \
-        --max_seq_length 384 \
-        --model_name_or_path bert-base-chinese \
-        --learning_rate 5e-5 \
-        --num_train_epochs 1 \
+        --max_seq_length 512 \
+        --model_name_or_path hfl/chinese-roberta-wwm-ext-large \
+        --learning_rate 3e-5 \
+        --num_train_epochs 3 \
         --output_dir /tmp2/b10902069/adl_hw1/extractive_dir/ \
-        --per_device_eval_batch_size=16 \
-        --per_device_train_batch_size=16 \
+        --per_device_eval_batch_size=2 \
+        --per_device_train_batch_size=2 \
+        --gradient_accumulation_steps=1 \
         --seed 4125252 \
-
         # Other unsused options:
         # --dataset_name
         # --dataset_config_name
@@ -61,9 +61,7 @@ case ${1} in
         # --config_name
         # --tokenizer_name
         # --use_slow_tokenizer
-        # --weight_decay
         # --max_train_steps
-        # --gradient_accumulation_steps
         # --lr_scheduler_type
         # --num_warmup_steps
         # --doc_stride
@@ -86,8 +84,6 @@ case ${1} in
         # --report_to
         ;;
     *)
-        echo "Please enter which model you want to train? (\"multiple_choice\"/\"extractive\")"
+        echo "Please enter which model you want to train? (multiple_choice/extractive)"
         ;;
 esac
-
-

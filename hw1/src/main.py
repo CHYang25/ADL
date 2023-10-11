@@ -526,7 +526,7 @@ def main():
         f.write("id,answer\n")
         for pair in prediction:
             id_, text_ = pair["id"], pair["prediction_text"]
-            f.write(f"{id_},{text_}\n")
+            f.write(f"{id_},\"{text_}\"\n")
             progress_bar_3.update(1)
 
 if __name__ == "__main__":
