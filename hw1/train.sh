@@ -141,7 +141,7 @@ case ${1} in
         --model_name_or_path hfl/chinese-roberta-wwm-ext-large \
         --learning_rate 3e-5 \
         --num_train_epochs 1 \
-        --output_dir ./model/extractive_dir/ \
+        --output_dir ./model/extractive_curve_dir/ \
         --per_device_eval_batch_size=2 \
         --per_device_train_batch_size=2 \
         --gradient_accumulation_steps=1 \
@@ -188,7 +188,7 @@ case ${1} in
         --model_name_or_path bert-base-chinese \
         --learning_rate 3e-5 \
         --num_train_epochs 8 \
-        --output_dir ./model/multiple_choice_dir/ \
+        --output_dir ./model/multiple_choice_scratch_dir/ \
         --per_device_eval_batch_size=4 \
         --per_device_train_batch_size=4 \
         --gradient_accumulation_steps=2 \
