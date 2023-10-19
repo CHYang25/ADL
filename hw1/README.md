@@ -45,42 +45,42 @@ hw1
 ## Execution
 ### Steps to generate the result:
 1. change directory to ```hw1```
-2. run ```download.sh```: This would download both models to ```./model```
+2. run ```download.sh```: This would download both models to ```./model/```, and the datasets to ```./data/```
 ```
 $ ./download.sh
 ```
 3. run ```run.sh```: This would start the model and generate the result
 ```
-$ ./run.sh <path_to_context.json> <path_to_test.json> <path_to_prediction.csv>
+$ ./run.sh ./data/context.json ./data/test.json ./prediction.csv
 ```
 
 ### Steps to reproduce the model:
 Run ```train.sh``` to train both of the models.
 ```
 # For mutliple choice model
-$ ./train.sh multiple_choice <path_to_train.json> <path_to_valid.json> <path_to_context.json>
+$ ./train.sh multiple_choice ./data/train.json ./data/valid.json ./data/context.json
 
 # For extractive model
-$ ./train.sh extractive <path_to_train.json> <path_to_valid.json> <path_to_context.json>
+$ ./train.sh extractive ./data/train.json ./data/valid.json ./data/context.json
 ```
 Then you'll have two models ready for ```main.py```. (or you can download them, as we mentioned from the last part)
 
 ### Steps to fine-tune the combined model(bonus):
 Run ```train.sh``` to train the model:
 ```
-$ ./train.sh combined <path_to_train.json> <path_to_valid.json> <path_to_context.json>
+$ ./train.sh combined ./data/train.json ./data/valid.json ./data/context.json
 ```
 
 ### Steps to plot the curves:
 Run ```train.sh``` to train the model and plot the curves:
 ```
-$ ./train.sh extractive_curve <path_to_train.json> <path_to_valid.json> <path_to_context.json>
+$ ./train.sh extractive_curve ./data/train.json ./data/valid.json ./data/context.json
 ```
 
 ### Steps to train the multiple_choice model from scratch:
 Run ```train.sh``` to train the model:
 ```
-$ ./train.sh multiple_choice_scratch <path_to_train.json> <path_to_valid.json> <path_to_context.json>
+$ ./train.sh multiple_choice_scratch ./data/train.json ./data/valid.json ./data/context.json
 ```
 
 ## Useful Links
