@@ -5,12 +5,17 @@ some notes:
 - We only train the decoder, encoder is already finished
 - mt5 is a multi-lingual T5
 - what i have to do with my code:
-    1. import all packages and initialize all the tools
-    2. prepare and tokenize the data
-    3. generate the encoded data
-    4. train with the encoded data
-    5. validate and store the result
+    - import all packages and initialize all the tools
+    - parse arguments
+    - prepare and tokenize the data
+    - generate the encoded data
+    - train with the encoded data
+    - validate and store the result
 - After everything is done, continue to Reinforcement Learning.
+
+development diary:
+- 2023/10/22: finished parse_arg.py, tw_rouge package download, train_decoder.py import packages, and train run script files PYTHONPATH specification
+- 
 
 useful links:
 - homework info: https://docs.google.com/presentation/d/1yJEQUtzFREeuEnkBTXei4SFEftnmnP3i05m0J5aGsg8/edit#slide=id.gd5d1d9d2d2_0_201
