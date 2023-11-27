@@ -8,7 +8,7 @@ This is the third assignment for the ADL course at NTU - fall 2023. It involves 
 ## Directory Structure
 This is the directory structure <span style="color:red">AFTER RUNNING ```download.sh```</span>:
 ```
-hw3
+.
 ├── adapter_checkpoint
 ├── download.sh
 ├── image
@@ -51,7 +51,7 @@ hw3
 7. sentencepiece==0.1.99
 
 ## Execution
-<span style="color:red">**The following code should exectued under the directory hw3.**</span>
+<span style="color:red">**The following code should exectued under the root directory of this package.**</span>
 
 1. To download the adapter checkpoint:
     ```

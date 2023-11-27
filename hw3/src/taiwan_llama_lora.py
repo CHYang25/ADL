@@ -300,8 +300,5 @@ for x in test_result_lst:
     if "你要" in x["output"]:
         x["output"] = x["output"].split("你要")[0]
 
-for x in test_result_lst:
-    print(x)
-
 with open(args.result_file, "w") as f:
     json.dump(test_result_lst, f, indent=4)
